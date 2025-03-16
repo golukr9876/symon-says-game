@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says Game</title>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+        }
+       html,body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2vh;
+        }
+        #main{
+            background-color: rgb(143, 168, 168);
+            border: 2px solid black;
+            width: 40vw;
+            height: 45vh;
+            border-radius: 20px;
+        }
+        #nav{
+            display: flex;
+            justify-content: center;
+        }
+
+        #nav h1{
+            margin-left: 9vw;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        #nav h3{
+            margin-left: 5vw;
+            font-size: 1.3rem;
+            font-weight: 100;
+            margin-top: 2vh;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 100px);
+            gap: 10px;
+            margin: 20px auto;
+            width: 220px;
+        }
+        .button {
+            width: 100px;
+            height: 100px;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+        .red { background: red; }
+        .green { background: green; }
+        .blue { background: blue; }
+        .yellow { background: yellow; }
+        .flash {
+            opacity: 0.4;
+        }
+        #start{
+            height: 4vh;
+            width: 8vw;
+            font-size: 1vw;
+            color: blue;
+            margin-left: 13vw ;
+
+        }
+        #help{
+            margin-left: 8vw;
+            width: 4vw;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #help:hover{
+            background-color: green;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+   <div id="main">
+        <div id="nav">
+            <h1>Simon Says</h1>
+            <h3>level:</h3>
+            <div id="lev" style="margin-top: 2vh; margin-left: 5px; font-size: 1.5rem;">1</div>
+        </div>
+        <div class="container">
+            <div class="button red" data-color="red"></div>
+            <div class="button green" data-color="green"></div>
+            <div class="button blue" data-color="blue"></div>
+            <div class="button yellow" data-color="yellow"></div>
+        </div>
+        <div class="bot" style="display: flex; justify-content: center;">
+            <button id="start" onclick="startGame()">Start Game</button>
+            <button id="help" onclick="help()">help</button>
+        </div>
+        
+   </div>
+    <script>
+        const colors = ["red", "green", "blue", "yellow"];
+        let sequence = []; //for generate random color sequence
+        let playerSequence = []; // for store color data which is clicked by player
+        let level = 0; 
+        
+
+        //start game 
+        function startGame() {
+            sequence = [];
+            playerSequence = [];
+            level = 0;
+            nextRound();   
+        }
+        
+    //  NEXT ROUND
+        function nextRound() {
+            level++;
+            playerSequence = [];
+            sequence.push(colors[Math.floor(Math.random() * 4)]); // ADD A RANDOM COLOR FROM THE ARRAY WHICH IS INITIALISE IN FIRST FROM RANDOM INDEX METHOD
+            playSequence();
+        }
+
+        //help function run when help button click
+        function help(){
+             hel = document.getElementById("nav");
+            hel.firstElementChild.innerHTML = sequence;
+           const interval = setInterval(() =>{
+                 hel.firstElementChild.innerHTML = "Simon Says";
+            },1000);
+        }
+       
+        function playSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                flashButton(sequence[i]);
+                i++;
+                if (i >= sequence.length) clearInterval(interval);
+            }, 1000);
+        }
+        
+        function flashButton(color) {
+            const button = document.querySelector(`.button.${color}`);
+            button.classList.add("flash");
+            setTimeout(() => button.classList.remove("flash"), 500);
+        }
+        
+        document.querySelectorAll(".button").forEach(button => {
+            button.addEventListener("click", (e) => { // player click color box
+                const color = e.target.dataset.color;
+                playerSequence.push(color); // selected color stored in playersequence
+                flashButton(color);
+                checkSequence();
+            });
+        });
+        
+        function checkSequence() {
+            const index = playerSequence.length - 1;
+            if (playerSequence[index] !== sequence[index]) {
+                alert("Game Over! You reached level " + level);
+                lev = document.getElementById("lev");
+                lev.innerHTML = 1;
+                startGame();
+                return;
+            }
+            if (playerSequence.length === sequence.length) {
+                setTimeout(nextRound, 1000);
+                lev = document.getElementById("lev");
+                lev.innerHTML = level+1;
+            }
+        }
+    </script>
+</body>
+</html>
